@@ -16,6 +16,13 @@ A powerful WordPress Elementor widget that displays custom post types in a beaut
   - Dynamic post type selection
   - Configurable number of posts per page
 
+### Category Filtering
+- **Dynamic Category Selection**
+  - Enable/disable category filtering
+  - Multiple category selection support
+  - Automatic taxonomy detection for custom post types
+  - Real-time category list updates based on post type
+
 ### Title Options
 - **Title Link Control**
   - Enable/disable clickable titles
@@ -76,6 +83,8 @@ A powerful WordPress Elementor widget that displays custom post types in a beaut
 ### Basic Setup
 - Choose layout type (Grid/List)
 - Select custom post type
+- Enable/disable category filtering
+- Select categories to filter posts
 - Set number of posts per page
 - Enable/disable title links
 - Toggle pagination

@@ -58,6 +58,19 @@ class Custom_Post_Elementor_Widget extends \Elementor\Widget_Base {
             ]
         );
 
+        // Category ID Control
+        $this->add_control(
+            'category_ids',
+            [
+                'label' => __('Category IDs', 'custom-post-elementor-widget'),
+                'type' => \Elementor\Controls_Manager::TEXT,
+                'default' => '',
+                'placeholder' => __('Enter category IDs (comma-separated)', 'custom-post-elementor-widget'),
+                'description' => __('Enter the category IDs separated by commas (e.g., 12,15,19)', 'custom-post-elementor-widget'),
+                'separator' => 'before',
+            ]
+        );
+
         $this->add_control(
             'posts_per_page',
             [
@@ -222,6 +235,35 @@ class Custom_Post_Elementor_Widget extends \Elementor\Widget_Base {
             'post_status' => 'publish',
             'paged' => $paged,
         ];
+
+        // Add category filter if IDs are provided
+        if (!empty($settings['category_ids'])) {
+            $category_ids = array_map('trim', explode(',', $settings['category_ids']));
+            $category_ids = array_filter($category_ids, 'is_numeric');
+
+            if (!empty($category_ids)) {
+                $taxonomy = 'category';
+                
+                // Get the taxonomies associated with the post type
+                $taxonomies = get_object_taxonomies($settings['post_type'], 'objects');
+                
+                // Look for a category-like taxonomy
+                foreach ($taxonomies as $tax) {
+                    if ($tax->hierarchical && $tax->show_ui) {
+                        $taxonomy = $tax->name;
+                        break;
+                    }
+                }
+
+                $args['tax_query'] = [
+                    [
+                        'taxonomy' => $taxonomy,
+                        'field' => 'term_id',
+                        'terms' => $category_ids,
+                    ]
+                ];
+            }
+        }
 
         $query = new WP_Query($args);
 
