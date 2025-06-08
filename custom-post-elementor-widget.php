@@ -18,7 +18,7 @@ function custom_post_widget_styles() {
         'custom-post-widget-styles',
         plugins_url('assets/css/custom-post-widget.css', __FILE__),
         [],
-        '1.0.0'
+        time()
     );
 }
 add_action('wp_enqueue_scripts', 'custom_post_widget_styles');

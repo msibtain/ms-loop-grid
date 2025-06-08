@@ -65,14 +65,14 @@
 }
 
 .custom-post-grid .custom-post-thumbnail {
-    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    /* padding-top: 56.25%; */ /* 16:9 Aspect Ratio */
 }
 
 .custom-post-grid .custom-post-thumbnail img,
 .custom-post-grid .custom-post-thumbnail a {
-    position: absolute;
+    /* position: absolute;
     top: 0;
-    left: 0;
+    left: 0; */
 }
 
 .custom-post-grid .custom-post-content {

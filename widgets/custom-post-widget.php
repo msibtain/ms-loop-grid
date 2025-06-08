@@ -84,9 +84,49 @@ class Custom_Post_Elementor_Widget extends \Elementor\Widget_Base {
 
         // Title Link Control
         $this->add_control(
+            'show_title',
+            [
+                'label' => __('Show Title', 'custom-post-elementor-widget'),
+                'type' => \Elementor\Controls_Manager::SWITCHER,
+                'label_on' => __('Yes', 'custom-post-elementor-widget'),
+                'label_off' => __('No', 'custom-post-elementor-widget'),
+                'default' => 'yes',
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
             'enable_title_link',
             [
                 'label' => __('Enable Title Link', 'custom-post-elementor-widget'),
+                'type' => \Elementor\Controls_Manager::SWITCHER,
+                'label_on' => __('Yes', 'custom-post-elementor-widget'),
+                'label_off' => __('No', 'custom-post-elementor-widget'),
+                'default' => 'yes',
+                'condition' => [
+                    'show_title' => 'yes',
+                ],
+            ]
+        );
+
+        // Description Control
+        $this->add_control(
+            'show_description',
+            [
+                'label' => __('Show Description', 'custom-post-elementor-widget'),
+                'type' => \Elementor\Controls_Manager::SWITCHER,
+                'label_on' => __('Yes', 'custom-post-elementor-widget'),
+                'label_off' => __('No', 'custom-post-elementor-widget'),
+                'default' => 'yes',
+                'separator' => 'before',
+            ]
+        );
+
+        // Featured Image Link Control
+        $this->add_control(
+            'enable_image_link',
+            [
+                'label' => __('Enable Featured Image Link', 'custom-post-elementor-widget'),
                 'type' => \Elementor\Controls_Manager::SWITCHER,
                 'label_on' => __('Yes', 'custom-post-elementor-widget'),
                 'label_off' => __('No', 'custom-post-elementor-widget'),
@@ -185,6 +225,107 @@ class Custom_Post_Elementor_Widget extends \Elementor\Widget_Base {
 
         $this->end_controls_section();
 
+        // Add Thumbnail Style Section
+        $this->start_controls_section(
+            'thumbnail_style_section',
+            [
+                'label' => __('Thumbnail Style', 'custom-post-elementor-widget'),
+                'tab' => \Elementor\Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_responsive_control(
+            'thumbnail_width',
+            [
+                'label' => __('Width', 'custom-post-elementor-widget'),
+                'type' => \Elementor\Controls_Manager::SLIDER,
+                'size_units' => ['%', 'px'],
+                'range' => [
+                    '%' => [
+                        'min' => 0,
+                        'max' => 100,
+                    ],
+                    'px' => [
+                        'min' => 0,
+                        'max' => 1000,
+                    ],
+                ],
+                'default' => [
+                    'unit' => '%',
+                    'size' => 100,
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .custom-post-thumbnail img' => 'width: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'thumbnail_height',
+            [
+                'label' => __('Height', 'custom-post-elementor-widget'),
+                'type' => \Elementor\Controls_Manager::SLIDER,
+                'size_units' => ['px', 'vh', 'auto'],
+                'range' => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 1000,
+                    ],
+                    'vh' => [
+                        'min' => 0,
+                        'max' => 100,
+                    ],
+                ],
+                'default' => [
+                    'unit' => 'auto',
+                    'size' => '',
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .custom-post-thumbnail img' => 'height: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'thumbnail_fit',
+            [
+                'label' => __('Object Fit', 'custom-post-elementor-widget'),
+                'type' => \Elementor\Controls_Manager::SELECT,
+                'default' => 'cover',
+                'options' => [
+                    'contain' => __('Contain', 'custom-post-elementor-widget'),
+                    'cover' => __('Cover', 'custom-post-elementor-widget'),
+                    'fill' => __('Fill', 'custom-post-elementor-widget'),
+                    'none' => __('None', 'custom-post-elementor-widget'),
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .custom-post-thumbnail img' => 'object-fit: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Border::get_type(),
+            [
+                'name' => 'thumbnail_border',
+                'selector' => '{{WRAPPER}} .custom-post-thumbnail img',
+            ]
+        );
+
+        $this->add_responsive_control(
+            'thumbnail_border_radius',
+            [
+                'label' => __('Border Radius', 'custom-post-elementor-widget'),
+                'type' => \Elementor\Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%'],
+                'selectors' => [
+                    '{{WRAPPER}} .custom-post-thumbnail img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->end_controls_section();
+
         // Style Section - Pagination
         $this->start_controls_section(
             'pagination_style_section',
@@ -228,6 +369,34 @@ class Custom_Post_Elementor_Widget extends \Elementor\Widget_Base {
         
         // Get current page number
         $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
+        
+        // Add base styles
+        ?>
+        <style>
+            .custom-post-thumbnail {
+                width: 100%;
+                display: block;
+                margin-bottom: 15px;
+            }
+            .custom-post-thumbnail img {
+                display: block;
+                width: 100%;
+                height: auto;
+                max-width: 100%;
+            }
+            .custom-post-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 30px;
+            }
+            .custom-post-list .custom-post-item {
+                margin-bottom: 30px;
+            }
+            .custom-post-item {
+                overflow: hidden;
+            }
+        </style>
+        <?php
         
         $args = [
             'post_type' => $settings['post_type'],
@@ -277,7 +446,7 @@ class Custom_Post_Elementor_Widget extends \Elementor\Widget_Base {
                 <div class="custom-post-item">
                     <?php if (has_post_thumbnail()) : ?>
                         <div class="custom-post-thumbnail">
-                            <?php if ($settings['enable_title_link'] === 'yes') : ?>
+                            <?php if ($settings['enable_image_link'] === 'yes') : ?>
                                 <a href="<?php the_permalink(); ?>">
                                     <?php the_post_thumbnail('medium'); ?>
                                 </a>
@@ -288,19 +457,23 @@ class Custom_Post_Elementor_Widget extends \Elementor\Widget_Base {
                     <?php endif; ?>
                     
                     <div class="custom-post-content">
-                        <h3 class="custom-post-title">
-                            <?php if ($settings['enable_title_link'] === 'yes') : ?>
-                                <a href="<?php the_permalink(); ?>">
+                        <?php if ($settings['show_title'] === 'yes') : ?>
+                            <h3 class="custom-post-title">
+                                <?php if ($settings['enable_title_link'] === 'yes') : ?>
+                                    <a href="<?php the_permalink(); ?>">
+                                        <?php the_title(); ?>
+                                    </a>
+                                <?php else : ?>
                                     <?php the_title(); ?>
-                                </a>
-                            <?php else : ?>
-                                <?php the_title(); ?>
-                            <?php endif; ?>
-                        </h3>
+                                <?php endif; ?>
+                            </h3>
+                        <?php endif; ?>
                         
-                        <div class="custom-post-description">
-                            <?php the_excerpt(); ?>
-                        </div>
+                        <?php if ($settings['show_description'] === 'yes') : ?>
+                            <div class="custom-post-description">
+                                <?php the_excerpt(); ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <?php
